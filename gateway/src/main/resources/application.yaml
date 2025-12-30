@@ -1,0 +1,35 @@
+server:
+  port: 8888
+
+spring:
+  application:
+    name: Gateway
+  cloud:
+    discovery:
+      enabled: true
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+          url-expression: "'http://'+serviceId.toLowerCase()"
+      routes:
+        - id: service-client
+          uri: lb://SERVICE-CLIENT
+          predicates:
+            - Path=/SERVICE-CLIENT/**
+          filters:
+            - StripPrefix=1
+        - id: service-car
+          uri: lb://SERVICE-CAR
+          predicates:
+            - Path=/SERVICE-CAR/**
+          filters:
+            - StripPrefix=1
+
+eureka:
+  instance:
+    hostname: localhost
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
